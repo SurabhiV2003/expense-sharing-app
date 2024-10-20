@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expenses Sharing</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 50%; margin: auto; padding: 20px; }
+        input, button { margin: 5px 0; padding: 10px; }
+        button { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Expense</h1>
+        <label for="description">Description:</label>
+        <input type="text" id="description" placeholder="Expense description"><br>
+
+        <label for="total_amount">Total Amount:</label>
+        <input type="number" id="total_amount" placeholder="Total amount"><br>
+
+        <label for="split_type">Split Type:</label>
+        <select id="split_type">
+            <option value="equal">Equal</option>
+            <option value="exact">Exact</option>
+            <option value="percentage">Percentage</option>
+        </select><br>
+
+        <label for="participants">Participants (Comma-separated User IDs):</label>
+        <input type="text" id="participants" placeholder="1, 2, 3"><br>
+
+        <button onclick="addExpense()">Submit Expense</button>
+
+        <h2 id="result"></h2>
+    </div>
+
+    <script>
+        function addExpense() {
+            const description = document.getElementById('description').value;
+            const totalAmount = document.getElementById('total_amount').value;
+            const splitType = document.getElementById('split_type').value;
+            const participants = document.getElementById('participants').value.split(',').map(id => ({ user_id: parseInt(id) }));
+
+            const expenseData = {
+                description: description,
+                total_amount: parseFloat(totalAmount),
+                split_type: splitType,
+                participants: participants
+            };
+
+            fetch('http://127.0.0.1:5000/api/expenses', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(expenseData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerText = 'Expense added successfully!';
+            })
+            .catch(error => {
+                document.getElementById('result').innerText = 'Error adding expense: ' + error;
+            });
+        }
+    </script>
+</body>
+</html>
